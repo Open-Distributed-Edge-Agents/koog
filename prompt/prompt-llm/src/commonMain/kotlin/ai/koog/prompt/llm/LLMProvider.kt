@@ -96,4 +96,13 @@ public abstract class LLMProvider(public val id: String, public val display: Str
      */
     @Serializable
     public data object Ollama : LLMProvider("ollama", "Ollama")
+
+    /**
+     * Represents the LiteRT provider for on-device models.
+     *
+     * LiteRT is identified by its unique ID ("litert") and display name ("LiteRT").
+     * It extends the `LLMProvider` sealed class.
+     */
+    @Serializable
+    public data object LiteRT : LLMProvider("litert", "LiteRT")
 }
