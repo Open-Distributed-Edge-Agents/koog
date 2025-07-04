@@ -31,10 +31,39 @@ object WeatherAgentProvider : AgentProvider {
         onErrorEvent: suspend (String) -> Unit,
         onAssistantMessage: suspend (String) -> String,
     ): AIAgent {
-        val openAiApiKey = appSettings.getCurrentSettings().openAiToken
-        require(openAiApiKey.isNotEmpty()) { "OpenAI api key is not configured." }
+        val currentSettings = appSettings.getCurrentSettings()
+        val promptExecutor: ai.koog.prompt.executor.model.PromptExecutor
+        val agentModel: ai.koog.prompt.llm.LLModel
 
-        val executor = simpleOpenAIExecutor(openAiApiKey)
+        when (currentSettings.selectedProvider) {
+            AppSettings.PROVIDER_LITERT -> {
+                require(currentSettings.liteRTModelPath.isNotBlank()) { "LiteRT model path is not configured." }
+                val liteRTModelId = currentSettings.liteRTModelId.ifEmpty {
+                    // Default to first available LiteRT model if not set - this should ideally be handled by SettingsViewModel defaulting
+                    ai.koog.prompt.llm.LiteRTModels.Gemma3n.E2B.id
+                }
+                agentModel = listOf(ai.koog.prompt.llm.LiteRTModels.Gemma3n.E2B, ai.koog.prompt.llm.LiteRTModels.Gemma3n.E4B)
+                    .find { it.id == liteRTModelId }
+                    ?: throw IllegalArgumentException("Selected LiteRT model ID '$liteRTModelId' not found.")
+
+                val enableVisionForClient = agentModel.capabilities.contains(ai.koog.prompt.llm.LLMCapability.Vision)
+
+                val liteRTClient = ai.koog.prompt.executor.litert.LiteRTClient(
+                    context = appSettings.context,
+                    modelPath = currentSettings.liteRTModelPath,
+                    enableVision = enableVisionForClient
+                    // other LiteRTClient params can be exposed in AppSettings if needed
+                )
+                promptExecutor = ai.koog.prompt.executor.llms.SingleLLMPromptExecutor(liteRTClient)
+            }
+            AppSettings.PROVIDER_OPENAI -> {
+                require(currentSettings.openAiToken.isNotBlank()) { "OpenAI API key is not configured." }
+                promptExecutor = simpleOpenAIExecutor(currentSettings.openAiToken)
+                agentModel = OpenAIModels.Chat.GPT4o // Or make this configurable in AppSettings too
+            }
+            else -> throw IllegalArgumentException("Unsupported LLM provider selected: ${currentSettings.selectedProvider}")
+        }
+
 
         // Create tool registry with weather tools
         val toolRegistry = ToolRegistry {
@@ -118,13 +147,13 @@ object WeatherAgentProvider : AgentProvider {
                     """.trimIndent()
                 )
             },
-            model = OpenAIModels.Chat.GPT4o,
+            model = agentModel, // Use the dynamically selected model
             maxAgentIterations = 50
         )
 
         // Create the runner
         return AIAgent(
-            promptExecutor = executor,
+            promptExecutor = promptExecutor, // Use the dynamically created executor
             strategy = strategy,
             agentConfig = agentConfig,
             toolRegistry = toolRegistry,
