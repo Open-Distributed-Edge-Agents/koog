@@ -22,7 +22,7 @@ include(":agents:agents-test")
 include(":agents:agents-tools")
 include(":agents:agents-utils")
 
-include(":examples")
+include(":examples:demo-android-app:app") // Changed from :examples to directly include the app module
 
 include(":integration-tests")
 
