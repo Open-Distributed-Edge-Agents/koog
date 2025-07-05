@@ -86,7 +86,7 @@ dependencies {
 
     // Koog
     implementation(libs.koog.agents)
-    implementation(project(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-litert-client")) // This path is actually correct as Gradle expects paths from root. The error message might be slightly misleading or there's another issue.
+    implementation(project(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-litert-client"))
     implementation(project(":prompt:prompt-llm")) // For LiteRTModels
 
     testImplementation(libs.junit)
