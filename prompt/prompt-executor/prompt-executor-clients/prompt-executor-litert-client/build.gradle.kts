@@ -1,10 +1,10 @@
 import ai.koog.gradle.publish.maven.Publishing.publishToMaven
 
 plugins {
-    id("com.android.library") version "8.2.0" // Apply Android plugin first
-    id("org.jetbrains.kotlin.android") // Explicitly apply kotlin-android
+    alias(libs.plugins.android.library) // Use alias from libs.versions.toml
     id("ai.kotlin.multiplatform")
     alias(libs.plugins.kotlin.serialization)
+    // org.jetbrains.kotlin.android should be applied by ai.kotlin.multiplatform for Android targets
 }
 
 group = rootProject.group
