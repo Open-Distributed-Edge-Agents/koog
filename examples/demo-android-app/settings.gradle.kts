@@ -23,4 +23,12 @@ dependencyResolutionManagement {
 
 rootProject.name = "koog-demo-android-app"
 
+includeBuild("../..") {
+    dependencySubstitution {
+        // This block can be used if you need to substitute dependencies from the main build,
+        // e.g., if the main build publishes artifacts that this build consumes.
+        // For direct project dependencies, this might not be strictly needed if paths are resolvable.
+    }
+}
+
 include(":app")
