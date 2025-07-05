@@ -3,7 +3,7 @@ import ai.koog.gradle.publish.maven.Publishing.publishToMaven
 plugins {
     alias(libs.plugins.android.library) // Use alias from libs.versions.toml
     id("ai.kotlin.multiplatform")
-    alias(libs.plugins.kotlinSerialization) // Corrected: kotlin.serialization -> kotlinSerialization
+    alias(libs.plugins.kotlin.serialization)
     // org.jetbrains.kotlin.android should be applied by ai.kotlin.multiplatform for Android targets
 }
 
