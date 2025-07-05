@@ -35,6 +35,8 @@ fun SettingsScreen(
 
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete // Added for Delete Icon
+import androidx.compose.material3.LinearProgressIndicator // Added for progress bar
 
 // ... (keep existing imports)
 
@@ -135,48 +137,63 @@ private fun SettingsScreenContent(
                     modifier = Modifier.padding(bottom = AppDimension.spacingSmall)
                 )
 
-                // LiteRT Model Selection Dropdown
-                Box {
-                    OutlinedTextField(
-                        value = viewModel.liteRTAvailableModels.find { it.id == uiState.liteRTModelId }?.displayName ?: "Select Model",
-                        onValueChange = { }, // Not directly changeable
-                        label = { Text("LiteRT Model") },
-                        readOnly = true,
-                        trailingIcon = { Icon(Icons.Filled.ArrowDropDown, "Select Model", Modifier.clickable { liteRTModelDropdownExpanded = true }) },
-                        modifier = Modifier.fillMaxWidth().clickable { liteRTModelDropdownExpanded = true }
-                    )
-                    DropdownMenu(
-                        expanded = liteRTModelDropdownExpanded,
-                        onDismissRequest = { liteRTModelDropdownExpanded = false }
-                    ) {
-                        viewModel.liteRTAvailableModels.forEach { model ->
-                            DropdownMenuItem(
-                                text = { Text(model.displayName) },
-                                onClick = {
-                                    viewModel.updateLiteRTModelId(model.id)
-                                    liteRTModelDropdownExpanded = false
-                                }
+                // LiteRT Model Management Section
+                uiState.availableLiteRTModels.forEach { downloadableModel ->
+                    val modelId = downloadableModel.llModel.id
+                    val status = uiState.liteRTModelDownloadStatus[modelId] ?: ModelDownloadStatus.NotDownloaded
+
+                    Spacer(modifier = Modifier.height(AppDimension.spacingMedium))
+                    Text(downloadableModel.llModel.displayName, style = MaterialTheme.typography.titleSmall)
+
+                    when (status) {
+                        is ModelDownloadStatus.NotDownloaded -> {
+                            Button(onClick = { viewModel.startDownload(downloadableModel) }) {
+                                Text("Download")
+                            }
+                        }
+                        is ModelDownloadStatus.Downloading -> {
+                            LinearProgressIndicator(
+                                progress = { status.progress }, // Ensure this is a Float
+                                modifier = Modifier.fillMaxWidth()
                             )
+                            Text("Downloading: ${(status.progress * 100).toInt()}%")
+                        }
+                        is ModelDownloadStatus.Downloaded -> {
+                            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                                Text("Downloaded at: ${status.path.substringAfterLast('/')}", style = MaterialTheme.typography.bodySmall)
+                                Spacer(Modifier.weight(1f))
+                                if (uiState.selectedLiteRTModelId == modelId) {
+                                    Text(" (Selected)", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelMedium)
+                                } else {
+                                    Button(onClick = { viewModel.selectDownloadedLiteRTModel(downloadableModel) }, modifier = Modifier.padding(end = AppDimension.spacingSmall)) {
+                                        Text("Select")
+                                    }
+                                }
+                                IconButton(onClick = { viewModel.deleteLiteRTModel(downloadableModel) }) {
+                                    Icon(Icons.Filled.Delete, "Delete Model")
+                                }
+                            }
+                        }
+                        is ModelDownloadStatus.Error -> {
+                            Text("Error: ${status.message}", color = MaterialTheme.colorScheme.error)
+                            Button(onClick = { viewModel.startDownload(downloadableModel) }) {
+                                Text("Retry Download")
+                            }
                         }
                     }
+                    Divider(modifier = Modifier.padding(top = AppDimension.spacingSmall))
                 }
                 Spacer(modifier = Modifier.height(AppDimension.spacingMedium))
 
-                // LiteRT Model Path
-                OutlinedTextField(
-                    value = uiState.liteRTModelPath,
-                    onValueChange = viewModel::updateLiteRTModelPath,
-                    label = { Text("LiteRT Model Path (.task file)") },
-                    placeholder = { Text("e.g., /data/local/tmp/model.task") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                Text(
-                    text = "Absolute path to the .task model file on the device. \nExample for adb: /data/local/tmp/model.task \nApp-specific dir: /Android/data/com.jetbrains.example.kotlin_agents_demo_app/files/your_model.task (use a file manager to place it here).",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = AppDimension.spacingExtraSmall)
-                )
-                Spacer(modifier = Modifier.height(AppDimension.spacingMedium))
+                // Display currently selected model and path (read-only)
+                if(uiState.selectedLiteRTModelId.isNotBlank() && uiState.selectedLiteRTModelPath.isNotBlank()){
+                    Text("Selected Model: ${uiState.availableLiteRTModels.find{it.llModel.id == uiState.selectedLiteRTModelId}?.llModel?.displayName ?: "None"}", style = MaterialTheme.typography.labelLarge)
+                    Text("Model Path: ${uiState.selectedLiteRTModelPath}", style = MaterialTheme.typography.bodySmall)
+                } else if (uiState.selectedLiteRTModelId.isNotBlank() && uiState.selectedLiteRTModelPath.isBlank() && uiState.liteRTModelDownloadStatus[uiState.selectedLiteRTModelId] !is ModelDownloadStatus.Downloaded) {
+                     Text("Selected Model: ${uiState.availableLiteRTModels.find{it.llModel.id == uiState.selectedLiteRTModelId}?.llModel?.displayName ?: "None"} (File missing or not downloaded)", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.error)
+                }
+
+
             }
 
             // Anthropic Token field (conditionally visible if we add Anthropic as a provider choice)

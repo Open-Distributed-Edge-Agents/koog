@@ -37,9 +37,13 @@ Your Android application utilizing this client will need appropriate permissions
 ### Model File
 
 `LiteRTClient` requires a LiteRT-compatible model file (ending in `.task`).
-*   You are responsible for making this model file available on the Android device.
-*   **Deployment**: For production, it's recommended to download the model from a server at runtime and store it in your app's private storage. The model path provided to `LiteRTClient` must be an absolute path to this file.
-*   **Development/Testing**: You can use `adb push` to place the model on your device/emulator. For example:
+*   The `modelPath` parameter in the `LiteRTClient` constructor must be an absolute path to this file on the Android device.
+*   **Application Responsibility**: Your application is responsible for ensuring this model file is present at the specified path. This might involve:
+    *   Bundling a model with your app (if very small, generally not recommended for LLMs).
+    *   Providing functionality within your app to download the model file from a server and store it in app-specific storage. The Koog Demo Android App includes an example of such a downloader.
+    *   Instructing users to manually place the model file and provide its path (less user-friendly).
+*   **Storage**: It's recommended to store downloaded models in your app's private storage (e.g., using `context.getExternalFilesDir(null)` or `context.filesDir`) to avoid needing broad storage permissions.
+*   **Development/Testing**: You can use `adb push` to place the model on your device/emulator for development. For example:
     ```bash
     adb push your_gemma_model.task /data/local/tmp/my_model.task
     ```

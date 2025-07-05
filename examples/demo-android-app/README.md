@@ -14,46 +14,28 @@ This is a simple demo Android app built with Jetpack Compose that demonstrates t
 
 ## Using LiteRT On-Device Models (e.g., Gemma 3n)
 
-This demo app supports running Large Language Models locally on your Android device using LiteRT.
+This demo app supports running Large Language Models (LLMs) locally on your Android device using LiteRT. It includes functionality to download compatible model files directly within the app.
 
-### 1. Obtain a Model File
+### Supported Models & Downloading
 
-*   You need a LiteRT-compatible model file in `.task` format.
-*   Google's Gemma 3n models are supported. You can find compatible LiteRT versions (e.g., `gemma-3n-e2b-it-cpu.task`, `gemma-3n-e4b-it-cpu.task`) on platforms like Hugging Face, often from the `google` or `litert-community` organizations.
-    *   Example for Gemma 3n E2B (2 Billion parameters, instruction-tuned, CPU): Search for "gemma-3n-E2B-it-litert-preview" or similar on Hugging Face. Download the `.task` file.
-*   Ensure you download a model variant suitable for your device (e.g., CPU version if you don't have a compatible GPU or are unsure).
+The app comes with a predefined list of LiteRT-compatible models (e.g., Gemma 3n variants) that you can download. These models are typically sourced from Hugging Face (e.g., from `google` or `litert-community` organizations).
 
-### 2. Place the Model File on Your Device
+**To use a LiteRT model:**
 
-You need to copy the downloaded `.task` file to a location on your Android device that the app can access and whose absolute path you can determine. Here are a few common methods:
+1.  **Navigate to Settings:** Open the Koog Demo App and go to the "Settings" screen.
+2.  **Select LiteRT Provider:** Choose "LiteRT" from the "LLM Provider" options. This will display the LiteRT model management section.
+3.  **Manage LiteRT Models:**
+    *   You will see a list of available LiteRT models (e.g., "Gemma 3n E2B", "Gemma 3n E4B").
+    *   **Download:** If a model shows "Not Downloaded" or "Error", click the "Download" (or "Retry Download") button next to it. The app will download the model file and store it in its private storage (`Android/data/com.jetbrains.example.kotlin_agents_demo_app/files/litert_models/`). You can see the download progress.
+    *   **Select:** Once a model is "Downloaded", click the "Select" button next to it to make it the active LiteRT model for the agents. The currently selected model will be indicated.
+    *   **Delete:** If you want to remove a downloaded model from your device to free up space, click the "Delete" (trash icon) button.
+4.  **Save Settings:** Ensure your selections are active by tapping the "Save" (check icon) button at the top right if you've made changes to the provider or selected a new LiteRT model. (Note: Downloading and selecting a model automatically updates and saves the relevant LiteRT model ID and path).
 
-*   **Using `adb push` (for developers):**
-    ```bash
-    adb push path/to/your/downloaded_model.task /data/local/tmp/model.task
-    ```
-    In this case, the path to enter in the app settings would be `/data/local/tmp/model.task`. This path is generally accessible for debugging purposes.
+After these steps, any agent configured to use the selected LLM provider will use your chosen downloaded LiteRT model.
 
-*   **Using Device File Manager (to app-specific directory - Recommended for ease):**
-    1.  Connect your device to your computer.
-    2.  Use your computer's file explorer or Android Studio's Device File Explorer to navigate to your device's storage.
-    3.  Go to `Android/data/com.jetbrains.example.kotlin_agents_demo_app/files/`. (If the `files` directory doesn't exist, you can create it or the app might create it on first launch if it tries to access it).
-    4.  Copy your `.task` model file into this `files` directory.
-    5.  The path to enter in the app settings would then be: `/storage/emulated/0/Android/data/com.jetbrains.example.kotlin_agents_demo_app/files/your_model.task` (or similar, the initial part `/storage/emulated/0` might vary slightly depending on the device, but `Android/data/...` is standard for external app-specific storage). You can often get the base path by using `context.getExternalFilesDir(null).getAbsolutePath()` in code if you were building the path programmatically. For manual entry, you'll need to determine this full path.
-
-*   **Using Device File Manager (to other accessible folders like Downloads):**
-    1.  Copy the `.task` file to a common folder like `Downloads`.
-    2.  You will then need to determine the absolute path to this file (e.g., `/storage/emulated/0/Download/your_model.task`). This can sometimes be tricky for users to find accurately.
-
-### 3. Configure in App Settings
-
-1.  Open the Koog Demo App.
-2.  Go to **Settings**.
-3.  Select **LiteRT** as the "LLM Provider".
-4.  From the "LiteRT Model" dropdown, select the model you downloaded (e.g., "Gemma 3n E2B").
-5.  In the "LiteRT Model Path" field, carefully enter the **full absolute path** to where you placed the `.task` file on your device.
-6.  Save the settings.
-
-Now, when you run an agent (e.g., Weather Agent), it should use the local LiteRT model.
+**Note on LiteRT Model Files:**
+*   The download URLs and expected model details are currently hardcoded in the app (see `SupportedLiteRTModels.kt`).
+*   Model files (`.task` format) can be large, so ensure you have sufficient storage space and a stable internet connection (preferably Wi-Fi) for downloading.
 
 **Note on LiteRT Performance:**
 *   LiteRT is optimized for on-device performance, but execution speed will vary significantly based on your device's hardware (CPU/GPU) and the model size.
