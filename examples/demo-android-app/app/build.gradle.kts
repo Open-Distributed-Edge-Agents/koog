@@ -86,6 +86,8 @@ dependencies {
 
     // Koog
     implementation(libs.koog.agents)
+    implementation(project(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-litert-client"))
+    implementation(project(":prompt:prompt-llm")) // For LiteRTModels
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
