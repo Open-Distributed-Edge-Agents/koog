@@ -2,6 +2,7 @@ import ai.koog.gradle.publish.maven.Publishing.publishToMaven
 
 plugins {
     id("com.android.library") version "8.2.0" // Apply Android plugin first
+    id("org.jetbrains.kotlin.android") // Explicitly apply kotlin-android
     id("ai.kotlin.multiplatform")
     alias(libs.plugins.kotlin.serialization)
 }
