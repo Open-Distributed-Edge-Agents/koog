@@ -10,8 +10,6 @@ import ai.koog.agents.core.tools.Tool
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.features.eventHandler.feature.handleEvents
 import ai.koog.prompt.dsl.prompt
-import ai.koog.prompt.llm.LiteRTModels // Added import
-import ai.koog.prompt.llm.LLMCapability // Added import
 import ai.koog.prompt.executor.clients.openai.OpenAIModels
 import ai.koog.prompt.executor.llms.all.simpleOpenAIExecutor
 import com.jetbrains.example.kotlin_agents_demo_app.agents.common.AgentProvider
