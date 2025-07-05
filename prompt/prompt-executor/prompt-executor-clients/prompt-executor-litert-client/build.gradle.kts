@@ -2,7 +2,7 @@ import ai.koog.gradle.publish.maven.Publishing.publishToMaven
 
 plugins {
     id("ai.kotlin.multiplatform")
-    id("com.android.library") // Added for Android library
+    id("com.android.library") version "8.2.0" // Explicitly added AGP version
     alias(libs.plugins.kotlin.serialization)
 }
 
