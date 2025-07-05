@@ -3,7 +3,7 @@ import ai.koog.gradle.publish.maven.Publishing.publishToMaven
 plugins {
     id("com.android.library") // Try without explicit version, relying on root pluginManagement
     id("ai.kotlin.multiplatform")
-    alias(libs.plugins.kotlinSerialization)
+    id("org.jetbrains.kotlin.plugin.serialization") version libs.versions.kotlin.get() // Explicit ID and version from catalog
 }
 
 group = rootProject.group
