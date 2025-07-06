@@ -20,9 +20,13 @@ testcontainers = "1.19.7"
 kover = "0.9.1"
 spring-boot = "3.5.3"
 spring-management = "1.1.7"
+paho-mqtt = "1.2.5"
+moquette = "0.17"
 
 [libraries]
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+paho-mqtt-service = { module = "org.eclipse.paho:org.eclipse.paho.android.service", version.ref = "paho-mqtt" }
+moquette-broker = { module = "io.moquette:moquette-broker", version.ref = "moquette" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }

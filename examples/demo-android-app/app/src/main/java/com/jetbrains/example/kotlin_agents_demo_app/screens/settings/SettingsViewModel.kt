@@ -31,6 +31,11 @@ data class SettingsUiState(
     val selectedLiteRTModelId: String = SupportedLiteRTModels.all.firstOrNull()?.llModel?.id ?: "",
     val selectedLiteRTModelPath: String = "", // Path of the currently selected and downloaded LiteRT model
 
+    // MQTT Settings
+    val mqttBrokerEnabled: Boolean = false,
+    val mqttClientEnabled: Boolean = false,
+    val mqttBrokerAddress: String = "tcp://10.0.2.2:1883",
+
     val isLoading: Boolean = true
 )
 
@@ -129,6 +134,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 liteRTModelDownloadStatus = initialModelStatuses, // Will be updated by checkAllModelFileStatuses
                 selectedLiteRTModelId = loadedSelectedId,
                 selectedLiteRTModelPath = loadedSelectedPath, // Will be verified
+                mqttBrokerEnabled = settings.mqttBrokerEnabled,
+                mqttClientEnabled = settings.mqttClientEnabled,
+                mqttBrokerAddress = settings.mqttBrokerAddress,
                 isLoading = false // Set to false after initial load attempt
             )
             // Call file status check after initial state is set from AppSettings
@@ -177,6 +185,24 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         _uiState.value = _uiState.value.copy(liteRTModelPath = path)
     }
 
+    fun updateMqttBrokerEnabled(enabled: Boolean) {
+        _uiState.value = _uiState.value.copy(mqttBrokerEnabled = enabled)
+        if (enabled && _uiState.value.mqttClientEnabled) {
+            _uiState.value = _uiState.value.copy(mqttClientEnabled = false) // Cannot be broker and client at the same time
+        }
+    }
+
+    fun updateMqttClientEnabled(enabled: Boolean) {
+        _uiState.value = _uiState.value.copy(mqttClientEnabled = enabled)
+        if (enabled && _uiState.value.mqttBrokerEnabled) {
+            _uiState.value = _uiState.value.copy(mqttBrokerEnabled = false) // Cannot be broker and client at the same time
+        }
+    }
+
+    fun updateMqttBrokerAddress(address: String) {
+        _uiState.value = _uiState.value.copy(mqttBrokerAddress = address)
+    }
+
     /**
      * Save settings to AppSettings
      */
@@ -189,7 +215,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                     anthropicToken = currentSettingsState.anthropicToken,
                     selectedProvider = currentSettingsState.selectedProvider,
                     liteRTModelId = currentSettingsState.selectedLiteRTModelId, // Use selectedLiteRTModelId
-                    liteRTModelPath = currentSettingsState.selectedLiteRTModelPath  // Use selectedLiteRTModelPath
+                    liteRTModelPath = currentSettingsState.selectedLiteRTModelPath,  // Use selectedLiteRTModelPath
+                    mqttBrokerEnabled = currentSettingsState.mqttBrokerEnabled,
+                    mqttClientEnabled = currentSettingsState.mqttClientEnabled,
+                    mqttBrokerAddress = currentSettingsState.mqttBrokerAddress
                 )
             )
         }

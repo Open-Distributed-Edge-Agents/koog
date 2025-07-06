@@ -214,6 +214,70 @@ private fun SettingsScreenContent(
                 singleLine = true
             )
             */
+
+            Spacer(modifier = Modifier.height(AppDimension.spacingLarge))
+
+            // MQTT Settings
+            Text(
+                text = "MQTT Settings",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = AppDimension.spacingMedium)
+            )
+
+            // MQTT Broker Enabled Switch
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                Text("Enable MQTT Broker (Captain Mode)", style = MaterialTheme.typography.bodyLarge)
+                Spacer(Modifier.weight(1f))
+                Switch(
+                    checked = uiState.mqttBrokerEnabled,
+                    onCheckedChange = viewModel::updateMqttBrokerEnabled
+                )
+            }
+            Text(
+                text = "The app will act as an MQTT broker. Other app instances can connect to this one.",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = AppDimension.spacingSmall, bottom = AppDimension.spacingMedium)
+            )
+
+
+            // MQTT Client Enabled Switch
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            ) {
+                Text("Enable MQTT Client (Participant Mode)", style = MaterialTheme.typography.bodyLarge)
+                Spacer(Modifier.weight(1f))
+                Switch(
+                    checked = uiState.mqttClientEnabled,
+                    onCheckedChange = viewModel::updateMqttClientEnabled,
+                    enabled = !uiState.mqttBrokerEnabled // Disable if broker is enabled
+                )
+            }
+            Text(
+                text = "The app will connect to an MQTT broker to send and receive messages.",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = AppDimension.spacingSmall, bottom = AppDimension.spacingSmall)
+            )
+
+
+            // MQTT Broker Address TextField (only enabled if client is enabled)
+            OutlinedTextField(
+                value = uiState.mqttBrokerAddress,
+                onValueChange = viewModel::updateMqttBrokerAddress,
+                label = { Text("MQTT Broker Address") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState.mqttClientEnabled && !uiState.mqttBrokerEnabled,
+                singleLine = true,
+                placeholder = { Text("e.g., tcp://<ip_address>:1883") }
+            )
+            Text(
+                text = "Address of the MQTT broker to connect to. Default is for Android Emulator host.",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = AppDimension.spacingSmall, bottom = AppDimension.spacingMedium)
+            )
         }
     }
 }
@@ -230,8 +294,11 @@ fun SettingsScreenContentPreview() {
             isLoading = false,
             selectedProvider = AppSettings.PROVIDER_LITERT,
             openAiToken = "preview_openai_token",
-            liteRTModelId = LiteRTModels.Gemma3n.E2B.id,
-            liteRTModelPath = "/path/to/model.task"
+            liteRTModelId = "preview_litert_model_id", // Placeholder for preview
+            liteRTModelPath = "/path/to/model.task",
+            mqttBrokerEnabled = false,
+            mqttClientEnabled = true,
+            mqttBrokerAddress = "tcp://10.0.2.2:1883"
         )
         // In a real scenario, you might need a fake ViewModel for previews or use a library for previewing ViewModels.
         // For now, we'll assume a basic ViewModel can be instantiated or provide a simpler preview.

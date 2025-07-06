@@ -9,6 +9,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+import androidx.datastore.preferences.core.booleanPreferencesKey
+
 // Define the DataStore at the app level
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -18,7 +20,10 @@ data class AppSettingsData(
     val anthropicToken: String,
     val selectedProvider: String = PROVIDER_OPENAI, // Default provider
     val liteRTModelId: String = "", // e.g., LiteRTModels.Gemma3n.E2B.id
-    val liteRTModelPath: String = ""
+    val liteRTModelPath: String = "",
+    val mqttBrokerEnabled: Boolean = false,
+    val mqttClientEnabled: Boolean = false,
+    val mqttBrokerAddress: String = "tcp://10.0.2.2:1883" // Default for Android emulator host
 )
 
 /**
@@ -37,6 +42,9 @@ class AppSettings(val context: Context) { // Made context public
         val SELECTED_PROVIDER_KEY = stringPreferencesKey("selected_provider")
         val LITERT_MODEL_ID_KEY = stringPreferencesKey("litert_model_id")
         val LITERT_MODEL_PATH_KEY = stringPreferencesKey("litert_model_path")
+        val MQTT_BROKER_ENABLED_KEY = booleanPreferencesKey("mqtt_broker_enabled")
+        val MQTT_CLIENT_ENABLED_KEY = booleanPreferencesKey("mqtt_client_enabled")
+        val MQTT_BROKER_ADDRESS_KEY = stringPreferencesKey("mqtt_broker_address")
     }
 
 
@@ -47,7 +55,10 @@ class AppSettings(val context: Context) { // Made context public
                 anthropicToken = preferences[ANTHROPIC_TOKEN_KEY].orEmpty(),
                 selectedProvider = preferences[SELECTED_PROVIDER_KEY] ?: PROVIDER_OPENAI,
                 liteRTModelId = preferences[LITERT_MODEL_ID_KEY].orEmpty(),
-                liteRTModelPath = preferences[LITERT_MODEL_PATH_KEY].orEmpty()
+                liteRTModelPath = preferences[LITERT_MODEL_PATH_KEY].orEmpty(),
+                mqttBrokerEnabled = preferences[MQTT_BROKER_ENABLED_KEY] ?: false,
+                mqttClientEnabled = preferences[MQTT_CLIENT_ENABLED_KEY] ?: false,
+                mqttBrokerAddress = preferences[MQTT_BROKER_ADDRESS_KEY] ?: "tcp://10.0.2.2:1883"
             )
         }.first()
     }
@@ -59,6 +70,9 @@ class AppSettings(val context: Context) { // Made context public
             preferences[SELECTED_PROVIDER_KEY] = settings.selectedProvider
             preferences[LITERT_MODEL_ID_KEY] = settings.liteRTModelId
             preferences[LITERT_MODEL_PATH_KEY] = settings.liteRTModelPath
+            preferences[MQTT_BROKER_ENABLED_KEY] = settings.mqttBrokerEnabled
+            preferences[MQTT_CLIENT_ENABLED_KEY] = settings.mqttClientEnabled
+            preferences[MQTT_BROKER_ADDRESS_KEY] = settings.mqttBrokerAddress
         }
     }
 }

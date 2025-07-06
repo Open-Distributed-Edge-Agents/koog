@@ -111,6 +111,7 @@ private fun AgentDemoScreenContent(
                         is Message.ErrorMessage -> ErrorMessageItem(message.text)
                         is Message.ToolCallMessage -> ToolCallMessageItem(message.text)
                         is Message.ResultMessage -> ResultMessageItem(message.text)
+                        is Message.RemoteMessage -> RemoteMessageBubble(message.text, message.senderId)
                     }
                 }
 
@@ -134,6 +135,37 @@ private fun AgentDemoScreenContent(
                     isEnabled = isInputEnabled,
                     isLoading = isLoading,
                     focusRequester = focusRequester
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RemoteMessageBubble(text: String, senderId: String?) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Start // Align remote messages to the start
+    ) {
+        Column( modifier = Modifier.widthIn(max = 280.dp)) {
+             senderId?.let {
+                Text(
+                    text = "From: $it", // Display sender ID if available
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = AppDimension.spacingSmall, bottom = AppDimension.spacingExtraSmall)
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(AppDimension.radiusExtraLarge))
+                    .background(MaterialTheme.colorScheme.surfaceVariant) // Different background for remote messages
+                    .padding(AppDimension.spacingMedium)
+            ) {
+                Text(
+                    text = text,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
@@ -400,6 +432,7 @@ fun AgentDemoScreenPreview() {
                 Message.ToolCallMessage("Tool example, args {a=2, b=2}"),
                 Message.ResultMessage("Result: 4"),
                 Message.AgentMessage("Hello! How can I help you today?"),
+                Message.RemoteMessage("This is a message from another agent!", senderId = "agent-alpha-7"),
                 Message.ErrorMessage("Error: Something went wrong")
             ),
             inputText = "",

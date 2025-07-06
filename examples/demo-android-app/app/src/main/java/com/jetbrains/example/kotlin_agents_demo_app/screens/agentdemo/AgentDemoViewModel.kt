@@ -19,6 +19,7 @@ sealed class Message {
     data class ErrorMessage(val text: String) : Message()
     data class ToolCallMessage(val text: String) : Message()
     data class ResultMessage(val text: String) : Message()
+    data class RemoteMessage(val text: String, val senderId: String?) : Message() // For messages from MQTT
 }
 
 // Define UI state for the agent demo screen
@@ -35,11 +36,14 @@ data class AgentDemoUiState(
     val currentUserResponse: String? = null,
 )
 
+import com.jetbrains.example.kotlin_agents_demo_app.mqtt.MqttMessageListener
+import com.jetbrains.example.kotlin_agents_demo_app.mqtt.MqttService // Required for getMqttClientId and publish
 
 class AgentDemoViewModel(
     application: Application,
     private val agentProvider: AgentProvider
-) : AndroidViewModel(application) {
+) : AndroidViewModel(application), MqttMessageListener {
+
     // UI state
     private val _uiState = MutableStateFlow(AgentDemoUiState(
         title = agentProvider.title,
@@ -59,17 +63,17 @@ class AgentDemoViewModel(
 
         // If agent is waiting for a response to a question
         if (_uiState.value.userResponseRequested) {
-            // Add user message to chat and update current response
-            _uiState.update { 
+            _uiState.update {
                 it.copy(
                     messages = it.messages + Message.UserMessage(userInput),
                     inputText = "",
-                    isLoading = true,
-                    userResponseRequested = false,
-                    currentUserResponse = userInput
+                    isLoading = true, // Will be set to false after agent processes this specific response
+                    userResponseRequested = false, // We are providing the response now
+                    currentUserResponse = userInput // This triggers the waiting runAgent to continue
                 )
             }
-        } else { // Initial message flow - add user message and start agent
+            // No need to call runAgent here, it's already waiting for currentUserResponse to be non-null
+        } else { // Initial message flow
             _uiState.update {
                 it.copy(
                     messages = it.messages + Message.UserMessage(userInput),
@@ -79,32 +83,34 @@ class AgentDemoViewModel(
                 )
             }
 
-            // Start the agent processing
+            // If this app instance is a captain (broker mode), publish the command
             viewModelScope.launch {
-                runAgent(userInput)
+                val settings = AppSettings(getApplication()).getCurrentSettings().first()
+                if (settings.mqttBrokerEnabled) {
+                    MqttService.staticPublishCommand(userInput)
+                }
+            }
+
+            viewModelScope.launch {
+                runAgent(userInput, isRemoteMessage = false)
             }
         }
     }
 
     // Run the agent
-    private suspend fun runAgent(userInput: String) {
+    private suspend fun runAgent(input: String, isRemoteMessage: Boolean) {
         withContext(Dispatchers.IO) {
             try {
-                // Create and run the agent using the factory
                 val agent = agentProvider.provideAgent(
-                    appSettings = AppSettings(application),
+                    appSettings = AppSettings(getApplication()),
                     onToolCallEvent = { message ->
-                        // Add tool call messages to the chat
                         viewModelScope.launch {
                             _uiState.update {
-                                it.copy(
-                                    messages = it.messages + Message.ToolCallMessage(message)
-                                )
+                                it.copy(messages = it.messages + Message.ToolCallMessage(message))
                             }
                         }
                     },
                     onErrorEvent = { errorMessage ->
-                        // Handle agent errors
                         viewModelScope.launch {
                             _uiState.update {
                                 it.copy(
@@ -116,56 +122,55 @@ class AgentDemoViewModel(
                         }
                     },
                     onAssistantMessage = { message ->
-                        // Handle agent asking user a question
+                        // Agent is asking a question
                         _uiState.update {
                             it.copy(
                                 messages = it.messages + Message.AgentMessage(message),
-                                isInputEnabled = true,
+                                isInputEnabled = true, // Enable input for user's response
                                 isLoading = false,
-                                userResponseRequested = true
+                                userResponseRequested = true // Signal that agent is waiting
                             )
                         }
 
-                        // Wait for user response
+                        // Suspend until user provides a response via sendMessage() -> updates currentUserResponse
                         val userResponse = _uiState
-                            .first { it.currentUserResponse != null }
-                            .currentUserResponse
-                            ?: throw IllegalArgumentException("User response is null")
+                            .map { it.currentUserResponse }
+                            .filterNotNull()
+                            .first() // waits for the first non-null response
 
-                        // Update the state to reset current response
-                        _uiState.update {
-                            it.copy(
-                                currentUserResponse = null
-                            )
-                        }
-
-                        // Return it to the agent
-                        userResponse
+                        // Reset for next interaction
+                        _uiState.update { it.copy(currentUserResponse = null, userResponseRequested = false) }
+                        userResponse // Return the collected response to the agent
                     },
                 )
 
-                // Run the agent
-                val result = agent.runAndGetResult(userInput)
+                val result = agent.runAndGetResult(input)
 
-                // Update UI with final state and mark chat as ended
+                if (isRemoteMessage) {
+                    // If it was a remote message, publish the response
+                    MqttService.staticPublishResponse(result.orEmpty())
+                }
+
                 _uiState.update {
                     it.copy(
                         messages = it.messages +
-                            Message.ResultMessage(result.orEmpty()) +
-                            Message.SystemMessage("The agent has stopped."),
-                        isInputEnabled = false,
+                                Message.ResultMessage(result.orEmpty()) +
+                                Message.SystemMessage("The agent has completed this interaction."),
+                        isInputEnabled = true, // Ready for new input
                         isLoading = false,
-                        isChatEnded = true
+                        isChatEnded = false // Chat can continue unless explicitly ended by a tool
                     )
                 }
             } catch (e: Exception) {
-                // Handle errors
                 _uiState.update {
                     it.copy(
                         messages = it.messages + Message.ErrorMessage("Error: ${e.message}"),
                         isInputEnabled = true,
                         isLoading = false
                     )
+                }
+                if (isRemoteMessage) {
+                     MqttService.staticPublishResponse("Error processing remote command: ${e.message}")
                 }
             }
         }
@@ -174,10 +179,34 @@ class AgentDemoViewModel(
     // Restart the chat
     fun restartChat() {
         _uiState.update {
-            AgentDemoUiState(
+            AgentDemoUiState( // Reset to initial state
                 title = agentProvider.title,
                 messages = listOf(Message.SystemMessage(agentProvider.description))
             )
         }
+    }
+
+    // --- MqttMessageListener Implementation ---
+    override fun onMqttMessageArrived(message: String) {
+        // Add message to UI (distinguish it as remote)
+        // For now, assuming message is from another "user" or agent via MQTT
+        // We might need to parse senderId if included in message format later
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    messages = it.messages + Message.RemoteMessage(message, senderId = "MQTT"), // Placeholder sender
+                    isInputEnabled = false, // Disable input while processing remote message
+                    isLoading = true
+                )
+            }
+            // Process the message using the agent
+            runAgent(message, isRemoteMessage = true)
+        }
+    }
+
+    override fun getMqttClientId(): String {
+        // This ViewModel needs access to the client ID used by MqttService
+        // For now, MqttService stores it statically after generation or retrieval.
+        return MqttService.generateOrGetClientId(getApplication())
     }
 }

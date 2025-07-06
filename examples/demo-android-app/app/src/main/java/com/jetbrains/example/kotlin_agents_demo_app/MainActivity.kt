@@ -24,10 +24,21 @@ import com.jetbrains.example.kotlin_agents_demo_app.screens.settings.SettingsScr
 import com.jetbrains.example.kotlin_agents_demo_app.screens.start.StartScreen
 import com.jetbrains.example.kotlin_agents_demo_app.theme.AppTheme
 import kotlinx.serialization.Serializable
+import android.content.Intent
+import com.jetbrains.example.kotlin_agents_demo_app.mqtt.MqttService
 
 class MainActivity : ComponentActivity() {
+
+    private var agentDemoViewModelInstance: AgentDemoViewModel? = null // To hold the ViewModel instance
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Start MqttService
+        Intent(this, MqttService::class.java).also { intent ->
+            startService(intent)
+        }
+
         setContent {
             AppTheme {
                 Surface(
@@ -35,10 +46,27 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavGraph(navController = navController)
+                    // Pass a lambda to get the ViewModel instance once it's created
+                    NavGraph(navController = navController) { viewModel ->
+                        agentDemoViewModelInstance = viewModel
+                        // Set the listener in MqttService
+                        // This assumes AgentDemoViewModel implements MqttMessageListener
+                        MqttService.messageListener = agentDemoViewModelInstance
+                    }
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        // Clear the listener when Activity is destroyed to prevent leaks
+        if (MqttService.messageListener === agentDemoViewModelInstance) {
+            MqttService.messageListener = null
+        }
+        agentDemoViewModelInstance = null // Clear the ViewModel instance
+        super.onDestroy()
+        // Optionally stop MqttService if it's not needed when app is fully closed and not just activity destroyed
+        // stopService(Intent(this, MqttService::class.java))
     }
 }
 
@@ -71,7 +99,7 @@ sealed interface NavRoute {
  * Main navigation graph for the app
  */
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(navController: NavHostController, onViewModelCreated: (AgentDemoViewModel) -> Unit) {
     NavHost(
         navController = navController,
         startDestination = NavRoute.StartScreen,
@@ -112,7 +140,7 @@ fun NavGraph(navController: NavHostController) {
                         ) as T
                     }
                 }
-            )
+            ).also(onViewModelCreated)
 
             AgentDemoScreen(
                 viewModel = viewModel,
@@ -135,7 +163,7 @@ fun NavGraph(navController: NavHostController) {
                         ) as T
                     }
                 }
-            )
+            ).also(onViewModelCreated)
 
             AgentDemoScreen(
                 viewModel = viewModel,
