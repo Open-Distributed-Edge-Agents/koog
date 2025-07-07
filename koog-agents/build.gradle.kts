@@ -9,9 +9,9 @@ plugins {
 
 val excluded = setOf(
     ":agents:agents-test",
-    // ":examples", // Remove the generic :examples
-    ":examples:demo-android-app",      // Exclude the intermediate project/directory
-    ":examples:demo-android-app:app",  // Exclude the demo app module itself
+    ":examples", // Ensure this is present and uncommented
+    ":examples:demo-android-app",
+    ":examples:demo-android-app:app",
     ":integration-tests",
     ":koog-spring-boot-starter",
     project.path, // the current project should not depend on itself
