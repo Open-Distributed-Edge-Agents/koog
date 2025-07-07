@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application") version "8.2.0" // Explicit AGP version
-    id("org.jetbrains.kotlin.android") version libs.versions.kotlin.get() // Explicit KGP for Android
+    // org.jetbrains.kotlin.android is typically applied by com.android.application, so removing explicit application.
     // Compose compiler plugin is typically managed by buildFeatures.compose=true and the Compose BOM.
     // No explicit compose compiler plugin here.
     id("org.jetbrains.kotlin.plugin.serialization") version libs.versions.kotlin.get() // Explicit Serialization plugin
