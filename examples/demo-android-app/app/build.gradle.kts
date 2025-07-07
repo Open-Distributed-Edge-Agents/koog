@@ -1,8 +1,9 @@
 plugins {
-    alias(libs.plugins.android.application) // Reverting to alias, ensure defined in TOML
-    alias(libs.plugins.kotlin.android)      // Reverting to alias, ensure defined in TOML
-    alias(libs.plugins.compose.compiler)    // Reverting to alias, ensure defined in TOML
-    alias(libs.plugins.kotlin.serialization) // Reverting to alias, ensure defined in TOML (likely kotlinSerialization from key kotlin-serialization)
+    id("com.android.application") version "8.2.0" // Explicit AGP version
+    id("org.jetbrains.kotlin.android") version libs.versions.kotlin.get() // Explicit KGP for Android
+    // Compose compiler plugin is typically managed by buildFeatures.compose=true and the Compose BOM.
+    // No explicit compose compiler plugin here.
+    id("org.jetbrains.kotlin.plugin.serialization") version libs.versions.kotlin.get() // Explicit Serialization plugin
 }
 
 android {
