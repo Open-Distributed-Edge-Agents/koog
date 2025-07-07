@@ -1,3 +1,6 @@
+// import java.net.URI
+// import org.gradle.jvm.toolchain.JavaLanguageVersion
+
 rootProject.name = "koog-agents"
 
 pluginManagement {
@@ -7,6 +10,8 @@ pluginManagement {
         mavenCentral() // For other common plugins/dependencies
     }
 }
+
+// Removed Foojay plugin and toolchainManagement block to simplify.
 
 include(":agents:agents-core")
 include(":agents:agents-ext")

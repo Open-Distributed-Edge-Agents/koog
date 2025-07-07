@@ -1,9 +1,10 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    id("com.android.application") version "8.2.0" // Explicit AGP version
-    // org.jetbrains.kotlin.android is typically applied by com.android.application, so removing explicit application.
-    // Compose compiler plugin is typically managed by buildFeatures.compose=true and the Compose BOM.
-    // No explicit compose compiler plugin here.
-    id("org.jetbrains.kotlin.plugin.serialization") version libs.versions.kotlin.get() // Explicit Serialization plugin
+    alias(libs.plugins.android.application)
+    // id("org.jetbrains.kotlin.android") version libs.versions.kotlin.get() // Removed
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -38,8 +39,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
         isCoreLibraryDesugaringEnabled = true
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    // kotlinOptions {
+    //     jvmTarget = "11"
+    // }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        // freeCompilerArgs.add("-Xcontext-receivers") // Example if needed
     }
 }
 
@@ -81,16 +89,16 @@ dependencies {
     // Ktor
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.android)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.content.negotiation) //ktor-client-content-negotiation
+    implementation(libs.ktor.serialization.kotlinx.json) //ktor-serialization-kotlinx-json
+    implementation(libs.ktor.client.logging) //ktor-client-logging
 
     // Koog
-    implementation(libs.koog.agents)
-    implementation(project(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-litert-client")) // This path is actually correct as Gradle expects paths from root. The error message might be slightly misleading or there's another issue.
+    implementation(project(":koog-agents"))
+    implementation(project(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-litert-client"))
     implementation(project(":prompt:prompt-llm")) // For LiteRTModels
 
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter.params) // This was already in libs.versions.toml
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

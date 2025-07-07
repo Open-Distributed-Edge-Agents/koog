@@ -13,9 +13,8 @@ dependencies {
     implementation(libs.jetsign.gradle.plugin)
 }
 
-kotlin {
-    jvmToolchain(17)
-}
+// Removed explicit Java and Kotlin toolchain settings for buildSrc.
+// Let it use Gradle's default or a system-provided JDK.
 
 gradlePlugin {
     plugins {
