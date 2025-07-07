@@ -1,12 +1,8 @@
 plugins {
-    id("com.android.application") version "8.2.0" // Using explicit ID and a common AGP version
-    // org.jetbrains.kotlin.android is typically applied by com.android.application, so removing explicit application.
-    // The compose.compiler plugin is often not applied directly in the plugins block like this
-    // but rather through composeOptions in the android block or by the KMP plugin.
-    // Removing `alias(libs.plugins.compose.compiler)` as it's causing an unresolved reference
-    // and relying on other mechanisms (like buildFeatures { compose = true } and compose.bom)
-    // to correctly set up Compose compilation.
-    id("org.jetbrains.kotlin.plugin.serialization") version libs.versions.kotlin.get() // Using explicit ID and version from catalog
+    alias(libs.plugins.android.application) // Reverting to alias, ensure defined in TOML
+    alias(libs.plugins.kotlin.android)      // Reverting to alias, ensure defined in TOML
+    alias(libs.plugins.compose.compiler)    // Reverting to alias, ensure defined in TOML
+    alias(libs.plugins.kotlin.serialization) // Reverting to alias, ensure defined in TOML (likely kotlinSerialization from key kotlin-serialization)
 }
 
 android {
