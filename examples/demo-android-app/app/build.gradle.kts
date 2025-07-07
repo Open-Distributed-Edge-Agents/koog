@@ -1,8 +1,12 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlin.serialization)
+    id("com.android.application") version "8.2.0" // Using explicit ID and a common AGP version
+    id("org.jetbrains.kotlin.android") version libs.versions.kotlin.get() // Using explicit ID and version from catalog
+    // The compose.compiler plugin is often not applied directly in the plugins block like this
+    // but rather through composeOptions in the android block or by the KMP plugin.
+    // Removing `alias(libs.plugins.compose.compiler)` as it's causing an unresolved reference
+    // and relying on other mechanisms (like buildFeatures { compose = true } and compose.bom)
+    // to correctly set up Compose compilation.
+    id("org.jetbrains.kotlin.plugin.serialization") version libs.versions.kotlin.get() // Using explicit ID and version from catalog
 }
 
 android {
