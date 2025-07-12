@@ -22,8 +22,10 @@ spring-boot = "3.5.3"
 spring-management = "1.1.7"
 opentelemetry = "1.51.0"
 aws-sdk-kotlin = "1.4.119"
+google-mediapipe-tasks-genai = "0.10.24"
 
 [libraries]
+google-mediapipe-tasks-genai = { module = "com.google.mediapipe:tasks-genai", version.ref = "google-mediapipe-tasks-genai" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

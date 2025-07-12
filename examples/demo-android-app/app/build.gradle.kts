@@ -87,6 +87,9 @@ dependencies {
     // Koog
     implementation(libs.koog.agents)
 
+    // LiteRT
+    implementation(libs.google.mediapipe.tasks.genai)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

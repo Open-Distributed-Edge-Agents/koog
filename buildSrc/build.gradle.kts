@@ -1,5 +1,6 @@
 repositories {
     mavenCentral()
+    google()
     maven(url = "https://packages.jetbrains.team/maven/p/jcs/maven")
 }
 

@@ -56,7 +56,12 @@ version = run {
 buildscript {
     dependencies {
         classpath("com.squareup.okhttp3:okhttp:4.12.0")
+        classpath(libs.kotlin.gradle.plugin)
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 plugins {

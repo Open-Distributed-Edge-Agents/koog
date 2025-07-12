@@ -2,6 +2,7 @@ package com.jetbrains.example.kotlin_agents_demo_app.screens.start
 
 import androidx.lifecycle.ViewModel
 import com.jetbrains.example.kotlin_agents_demo_app.NavRoute
+import com.jetbrains.example.kotlin_agents_demo_app.agents.litert.LiteRTAgentProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +18,11 @@ data class StartUiState(
             title = "Weather Forecast",
             description = "A weather agent that can provide forecasts for any location. Ask about weather conditions, dates, and more.",
             agentDemoRoute = NavRoute.AgentDemoRoute.WeatherScreen
+        ),
+        CardItem(
+            title = "LiteRT",
+            description = "A LiteRT agent that runs locally on your device.",
+            agentDemoRoute = NavRoute.AgentDemoRoute.LiteRTScreen
         ),
     )
 )
