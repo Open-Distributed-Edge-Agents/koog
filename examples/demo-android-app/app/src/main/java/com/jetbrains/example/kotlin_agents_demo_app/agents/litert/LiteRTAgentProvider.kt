@@ -44,7 +44,14 @@ object LiteRTAgentProvider : AgentProvider {
 
         val agentConfig = AIAgentConfig(
             prompt = prompt("chat") {
-                system("You are a helpful assistant.")
+                system(
+                    """
+                    You are a helpful assistant in a multi-agent chat.
+                    Other agents will send messages to this chat.
+                    Your responses will be sent to all other agents.
+                    Prefix your responses with your client ID: ${executor.clientId}
+                    """.trimIndent()
+                )
             },
             model = LiteRTModels.Gemma.GEMMA_3N_E2B
         )

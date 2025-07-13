@@ -13,11 +13,14 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
+import java.util.UUID
+
 class LiteRTClient(
     private val context: Context,
     private val modelPath: String
 ) : LLMClient {
 
+    val clientId: String = UUID.randomUUID().toString()
     private var llmInference: LlmInference? = null
 
     private fun getLlmInference(resultListener: LlmInference.ErrorListener, partialResultListener: (partialResult: String, done: Boolean) -> Unit): LlmInference {

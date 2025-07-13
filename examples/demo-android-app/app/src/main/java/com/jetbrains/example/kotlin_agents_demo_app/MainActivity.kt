@@ -21,6 +21,7 @@ import com.jetbrains.example.kotlin_agents_demo_app.agents.litert.LiteRTAgentPro
 import com.jetbrains.example.kotlin_agents_demo_app.agents.weather.WeatherAgentProvider
 import com.jetbrains.example.kotlin_agents_demo_app.screens.agentdemo.AgentDemoScreen
 import com.jetbrains.example.kotlin_agents_demo_app.screens.agentdemo.AgentDemoViewModel
+import com.jetbrains.example.kotlin_agents_demo_app.screens.mqtt.MqttSettingsScreen
 import com.jetbrains.example.kotlin_agents_demo_app.screens.settings.SettingsScreen
 import com.jetbrains.example.kotlin_agents_demo_app.screens.start.StartScreen
 import com.jetbrains.example.kotlin_agents_demo_app.theme.AppTheme
@@ -53,6 +54,9 @@ sealed interface NavRoute {
 
     @Serializable
     data object SettingsScreen : NavRoute
+
+    @Serializable
+    data object MqttSettingsScreen : NavRoute
 
     /**
      * Screens with agent demos
@@ -98,6 +102,17 @@ fun NavGraph(navController: NavHostController) {
                     navController.popBackStack()
                 },
                 onSaveSettings = {
+                    navController.popBackStack()
+                },
+                onNavigateToMqttSettings = {
+                    navController.navigate(NavRoute.MqttSettingsScreen)
+                }
+            )
+        }
+
+        composable<NavRoute.MqttSettingsScreen> {
+            MqttSettingsScreen(
+                onNavigateBack = {
                     navController.popBackStack()
                 }
             )

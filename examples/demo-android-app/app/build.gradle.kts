@@ -92,6 +92,10 @@ dependencies {
     // LiteRT
     implementation(libs.google.mediapipe.tasks.genai)
 
+    // MQTT
+    implementation(libs.paho.android.service)
+    implementation(libs.moquette.broker)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

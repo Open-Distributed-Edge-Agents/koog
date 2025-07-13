@@ -36,16 +36,34 @@ data class AgentDemoUiState(
 )
 
 
+import com.jetbrains.example.kotlin_agents_demo_app.mqtt.MqttManager
+
 class AgentDemoViewModel(
     application: Application,
     private val agentProvider: AgentProvider
 ) : AndroidViewModel(application) {
+
+    private val mqttManager = MqttManager(application) { message ->
+        handleMqttMessage(message)
+    }
+
     // UI state
     private val _uiState = MutableStateFlow(AgentDemoUiState(
         title = agentProvider.title,
         messages = listOf(Message.SystemMessage(agentProvider.description))
     ))
     val uiState: StateFlow<AgentDemoUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            mqttManager.start()
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        mqttManager.stop()
+    }
 
     // Update input text
     fun updateInputText(text: String) {
@@ -56,6 +74,8 @@ class AgentDemoViewModel(
     fun sendMessage() {
         val userInput = _uiState.value.inputText.trim()
         if (userInput.isEmpty()) return
+
+        mqttManager.publish(userInput)
 
         // If agent is waiting for a response to a question
         if (_uiState.value.userResponseRequested) {
@@ -82,6 +102,21 @@ class AgentDemoViewModel(
             // Start the agent processing
             viewModelScope.launch {
                 runAgent(userInput)
+            }
+        }
+    }
+
+    private fun handleMqttMessage(message: String) {
+        viewModelScope.launch {
+            val parts = message.split(":", limit = 2)
+            val clientId = parts[0]
+            val text = parts[1]
+
+            if (clientId != mqttManager.clientId) {
+                _uiState.update {
+                    it.copy(messages = it.messages + Message.AgentMessage("[$clientId] $text"))
+                }
+                runAgent(text)
             }
         }
     }

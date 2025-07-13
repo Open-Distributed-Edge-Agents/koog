@@ -65,6 +65,8 @@ koog-agents = { module = "ai.koog:koog-agents", version.ref = "koog" }
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
 google-mediapipe-tasks-genai = { module = "com.google.mediapipe:tasks-genai", version = "0.10.24" }
+paho-android-service = { module = "org.eclipse.paho:org.eclipse.paho.android.service", version = "1.1.1" }
+moquette-broker = { module = "io.moquette:moquette-broker", version = "0.17" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }

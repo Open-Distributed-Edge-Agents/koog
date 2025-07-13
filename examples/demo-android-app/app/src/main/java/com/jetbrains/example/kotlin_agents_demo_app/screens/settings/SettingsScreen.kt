@@ -18,6 +18,7 @@ import com.jetbrains.example.kotlin_agents_demo_app.theme.AppTheme
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
     onSaveSettings: () -> Unit,
+    onNavigateToMqttSettings: () -> Unit,
     viewModel: SettingsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -31,7 +32,8 @@ fun SettingsScreen(
         onSaveSettings = {
             viewModel.saveSettings()
             onSaveSettings()
-        }
+        },
+        onNavigateToMqttSettings = onNavigateToMqttSettings
     )
 }
 
@@ -43,7 +45,8 @@ private fun SettingsScreenContent(
     onOpenAiTokenChange: (String) -> Unit,
     onAnthropicTokenChange: (String) -> Unit,
     onNavigateBack: () -> Unit,
-    onSaveSettings: () -> Unit
+    onSaveSettings: () -> Unit,
+    onNavigateToMqttSettings: () -> Unit
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -119,6 +122,12 @@ private fun SettingsScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
+            Spacer(modifier = Modifier.height(AppDimension.spacingMedium))
+
+            Button(onClick = onNavigateToMqttSettings) {
+                Text("MQTT Settings")
+            }
         }
     }
 }

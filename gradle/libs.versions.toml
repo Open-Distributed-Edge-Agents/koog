@@ -23,9 +23,13 @@ spring-management = "1.1.7"
 opentelemetry = "1.51.0"
 aws-sdk-kotlin = "1.4.119"
 google-mediapipe-tasks-genai = "0.10.24"
+paho-android = "1.1.1"
+moquette-broker = "0.17"
 
 [libraries]
 google-mediapipe-tasks-genai = { module = "com.google.mediapipe:tasks-genai", version.ref = "google-mediapipe-tasks-genai" }
+paho-android-service = { module = "org.eclipse.paho:org.eclipse.paho.android.service", version.ref = "paho-android" }
+moquette-broker = { module = "io.moquette:moquette-broker", version.ref = "moquette-broker" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
