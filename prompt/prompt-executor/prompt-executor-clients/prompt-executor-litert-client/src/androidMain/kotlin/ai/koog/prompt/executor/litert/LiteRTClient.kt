@@ -15,12 +15,12 @@ import kotlinx.coroutines.flow.callbackFlow
 
 import java.util.UUID
 
-class LiteRTClient(
-    private val context: Context,
+actual class LiteRTClient actual constructor(
+    private val context: Any,
     private val modelPath: String
 ) : LLMClient {
 
-    val clientId: String = UUID.randomUUID().toString()
+    actual val clientId: String = UUID.randomUUID().toString()
     private var llmInference: LlmInference? = null
 
     private fun getLlmInference(resultListener: LlmInference.ErrorListener, partialResultListener: (partialResult: String, done: Boolean) -> Unit): LlmInference {
@@ -30,7 +30,7 @@ class LiteRTClient(
                 .setResultListener(partialResultListener)
                 .setErrorListener(resultListener)
                 .build()
-            llmInference = LlmInference.createFromOptions(context, options)
+            llmInference = LlmInference.createFromOptions(context as Context, options)
         }
         return llmInference as LlmInference
     }
