@@ -7,6 +7,14 @@ group = rootProject.group
 version = rootProject.version
 
 kotlin {
+    jvm()
+    js {
+        browser()
+        nodejs()
+    }
+    wasmJs {
+        browser()
+    }
     androidTarget {
         publishLibraryVariants("release", "debug")
     }
