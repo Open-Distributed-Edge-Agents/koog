@@ -24,5 +24,3 @@ dependencyResolutionManagement {
 rootProject.name = "koog-demo-android-app"
 
 include(":app")
-
-includeBuild("../../")
