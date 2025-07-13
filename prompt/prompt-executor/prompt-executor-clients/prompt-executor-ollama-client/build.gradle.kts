@@ -9,7 +9,6 @@ group = rootProject.group
 version = rootProject.version
 
 kotlin {
-    jvmToolchain(17)
     sourceSets {
         commonMain {
             dependencies {

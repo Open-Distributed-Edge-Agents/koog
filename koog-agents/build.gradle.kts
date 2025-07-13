@@ -54,7 +54,6 @@ val included = setOf(
 )
 
 kotlin {
-    jvmToolchain(17)
     sourceSets {
         commonMain {
             dependencies {
