@@ -33,7 +33,24 @@ data class CardItem(
     val agentDemoRoute: NavRoute.AgentDemoRoute? = null,
 )
 
-class StartViewModel : ViewModel() {
+import android.app.Application
+import android.app.DownloadManager
+import android.content.Context
+import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
+
+class StartViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(StartUiState())
     val uiState: StateFlow<StartUiState> = _uiState.asStateFlow()
+
+    fun downloadModel(modelName: String) {
+        val downloadManager = getApplication<Application>().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val uri = Uri.parse("https://huggingface.co/google/$modelName/resolve/main/model.tflite")
+        val request = DownloadManager.Request(uri)
+            .setTitle("$modelName.task")
+            .setDescription("Downloading $modelName")
+            .setDestinationInExternalFilesDir(getApplication(), null, "$modelName.task")
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        downloadManager.enqueue(request)
+    }
 }

@@ -11,6 +11,8 @@ import ai.koog.prompt.llm.LiteRTModels
 import com.jetbrains.example.kotlin_agents_demo_app.agents.common.AgentProvider
 import com.jetbrains.example.kotlin_agents_demo_app.settings.AppSettings
 
+import java.io.File
+
 object LiteRTAgentProvider : AgentProvider {
     override val title: String = "LiteRT"
     override val description: String = "Hi, I'm a LiteRT agent. I'm running locally on your device."
@@ -22,8 +24,14 @@ object LiteRTAgentProvider : AgentProvider {
         onAssistantMessage: suspend (String) -> String
     ): AIAgent {
         val context = appSettings.getApplicationContext()
-        val modelPath = "/data/local/tmp/llm/model.task" // TODO: make this configurable
-        val executor = LiteRTClient(context, modelPath)
+        val modelName = "gemma-3n-e2b-it" // TODO: make this configurable
+        val modelFile = File(context.getExternalFilesDir(null), "$modelName.task")
+
+        if (!modelFile.exists()) {
+            throw IllegalStateException("Model file not found. Please download the model first.")
+        }
+
+        val executor = LiteRTClient(context, modelFile.absolutePath)
 
         val strategy = strategy(title) {
             val nodeRequestLLM by nodeLLMRequest()
@@ -38,7 +46,7 @@ object LiteRTAgentProvider : AgentProvider {
             prompt = prompt("chat") {
                 system("You are a helpful assistant.")
             },
-            model = LiteRTModels.Gemma.GEMMA_3_1B
+            model = LiteRTModels.Gemma.GEMMA_3N_E2B
         )
 
         return AIAgent(

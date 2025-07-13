@@ -31,6 +31,7 @@ fun StartScreen(
         cards = uiState.demoCards,
         onNavigateToSettings = onNavigateToSettings,
         onNavigateToAgentDemo = onNavigateToAgentDemo,
+        onDownloadModel = viewModel::downloadModel
     )
 }
 
@@ -40,6 +41,7 @@ private fun StartScreenContent(
     cards: List<CardItem>,
     onNavigateToSettings: () -> Unit,
     onNavigateToAgentDemo: (NavRoute.AgentDemoRoute) -> Unit,
+    onDownloadModel: (String) -> Unit,
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -115,14 +117,14 @@ private fun StartScreenContent(
                 ) {
                     cards.forEach { card ->
                         CardItem(
-                            title = card.title,
-                            description = card.description,
+                            card = card,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = AppDimension.spacingMedium),
                             onClick = {
                                 card.agentDemoRoute?.let { demoRoute -> onNavigateToAgentDemo(demoRoute) }
-                            }
+                            },
+                            onDownloadModel = onDownloadModel
                         )
                     }
                 }
@@ -134,10 +136,10 @@ private fun StartScreenContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CardItem(
-    title: String,
-    description: String,
+    card: CardItem,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onDownloadModel: (String) -> Unit,
 ) {
     ElevatedCard(
         modifier = modifier,
@@ -154,16 +156,29 @@ private fun CardItem(
             modifier = Modifier.padding(AppDimension.spacingMedium)
         ) {
             Text(
-                text = title,
+                text = card.title,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = AppDimension.spacingSmall)
             )
             Text(
-                text = description,
+                text = card.description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            if (card.agentDemoRoute == NavRoute.AgentDemoRoute.LiteRTScreen) {
+                Spacer(modifier = Modifier.height(AppDimension.spacingMedium))
+                Row {
+                    Button(onClick = { onDownloadModel("gemma-3n-e2b-it") }) {
+                        Text("Download E2B")
+                    }
+                    Spacer(modifier = Modifier.width(AppDimension.spacingMedium))
+                    Button(onClick = { onDownloadModel("gemma-3n-e4b-it") }) {
+                        Text("Download E4B")
+                    }
+                }
+            }
         }
     }
 }
