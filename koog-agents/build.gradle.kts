@@ -55,7 +55,9 @@ val included = setOf(
 )
 
 kotlin {
-    androidTarget()
+    androidTarget {
+        publishLibraryVariants("release", "debug")
+    }
     sourceSets {
         commonMain {
             dependencies {

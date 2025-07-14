@@ -10,7 +10,7 @@ version = rootProject.version
 
 kotlin {
     androidTarget {
-        publishLibraryVariants("release")
+        publishLibraryVariants("release", "debug")
     }
     sourceSets {
         commonMain {
