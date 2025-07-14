@@ -63,6 +63,9 @@ sealed interface NavRoute {
 
         @Serializable
         data object WeatherScreen : AgentDemoRoute
+
+        @Serializable
+        data object LiteRTScreen : AgentDemoRoute
     }
 
 }
@@ -102,6 +105,29 @@ fun NavGraph(navController: NavHostController) {
         composable<NavRoute.AgentDemoRoute.CalculatorScreen> {
             val context = LocalContext.current
             val provider = CalculatorAgentProvider
+            val viewModel = viewModel<AgentDemoViewModel>(
+                factory = object : ViewModelProvider.Factory {
+                    @Suppress("UNCHECKED_CAST")
+                    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                        return AgentDemoViewModel(
+                            application = context.applicationContext as Application,
+                            agentProvider = provider
+                        ) as T
+                    }
+                }
+            )
+
+            AgentDemoScreen(
+                viewModel = viewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+            )
+        }
+
+        composable<NavRoute.AgentDemoRoute.LiteRTScreen> {
+            val context = LocalContext.current
+            val provider = com.jetbrains.example.kotlin_agents_demo_app.agents.litert.LiteRTAgentProvider
             val viewModel = viewModel<AgentDemoViewModel>(
                 factory = object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
