@@ -55,6 +55,7 @@ val included = setOf(
 )
 
 kotlin {
+    androidTarget()
     sourceSets {
         commonMain {
             dependencies {
