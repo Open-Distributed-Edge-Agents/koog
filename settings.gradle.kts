@@ -28,7 +28,8 @@ include(":examples")
 
 include(":integration-tests")
 
-include(":koog-agents") { project(":koog-agents").projectDir = file("koog-agents") }
+include(":koog-agents")
+project(":koog-agents").projectDir = file("koog-agents")
 
 include(":prompt:prompt-cache:prompt-cache-files")
 include(":prompt:prompt-cache:prompt-cache-model")
