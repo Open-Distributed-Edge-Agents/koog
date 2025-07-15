@@ -5,7 +5,6 @@ version = rootProject.version
 
 plugins {
     id("ai.kotlin.multiplatform")
-    id("com.android.library")
 }
 
 val excluded = setOf(
