@@ -3,6 +3,8 @@ rootProject.name = "koog-agents"
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        google()
+        mavenCentral()
     }
 }
 
