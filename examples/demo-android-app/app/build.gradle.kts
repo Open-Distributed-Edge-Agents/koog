@@ -85,8 +85,8 @@ dependencies {
     implementation(libs.ktor.client.logging)
 
     // Koog
-    implementation(project(":koog-agents", configuration = "android"))
-    implementation(project(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-litert-client", configuration = "android"))
+    implementation(project(":koog-agents"))
+    implementation(project(":prompt:prompt-executor:prompt-executor-llms-all"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

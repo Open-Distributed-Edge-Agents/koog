@@ -3,9 +3,11 @@ rootProject.name = "koog-agents"
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        google()
-        mavenCentral()
     }
+}
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
 include(":agents:agents-core")
@@ -29,7 +31,6 @@ include(":examples")
 include(":integration-tests")
 
 include(":koog-agents")
-project(":koog-agents").projectDir = file("koog-agents")
 
 include(":prompt:prompt-cache:prompt-cache-files")
 include(":prompt:prompt-cache:prompt-cache-model")
@@ -56,6 +57,8 @@ include(":prompt:prompt-model")
 include(":prompt:prompt-structure")
 include(":prompt:prompt-tokenizer")
 include(":prompt:prompt-xml")
+include("prompt:prompt-executor:prompt-executor-clients:prompt-executor-ollama-client")
+include(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-ollama-client")
 
 include(":embeddings:embeddings-base")
 include(":embeddings:embeddings-llm")

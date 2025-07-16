@@ -1,22 +1,30 @@
 package com.jetbrains.example.kotlin_agents_demo_app.agents.litert
 
-import ai.koog.agents.Agent
-import ai.koog.prompt.executor.PromptExecutor
-import ai.koog.prompt.executor.litert.client.LiteRTClient
-import ai.koog.prompt.executor.llms.DefaultPromptExecutor
-import ai.koog.prompt.llm.LLMProvider
-import com.jetbrains.example.kotlin_agents_demo_app.agents.AgentProvider
+import ai.koog.agents.core.agent.AIAgent
+import ai.koog.prompt.llm.litert.LiteRTClient
+import com.jetbrains.example.kotlin_agents_demo_app.agents.common.AgentProvider
+import com.jetbrains.example.kotlin_agents_demo_app.settings.AppSettings
 
 object LiteRTAgentProvider : AgentProvider {
-    override val name: String = "LiteRT Agent"
+    override val title: String = "LiteRT Gemma"
+    override val description: String = "A LiteRT agent that uses the Gemma model to chat."
 
-    override fun getAgent(): Agent {
-        val executor: PromptExecutor = DefaultPromptExecutor(
-            mapOf(
-                LLMProvider.LiteRT to LiteRTClient()
-            )
-        )
+    override suspend fun provideAgent(
+        appSettings: AppSettings,
+        onToolCallEvent: suspend (String) -> Unit,
+        onErrorEvent: suspend (String) -> Unit,
+        onAssistantMessage: suspend (String) -> String
+    ): AIAgent {
+        val client = LiteRTClient()
         // To be implemented
-        return Agent(executor)
+        return AIAgent(
+            client = client,
+            model = TODO(),
+            tools = emptyList(),
+            onToolCallCallback = onToolCallEvent,
+            onToolResultCallback = {},
+            onModelErrorCallback = onErrorEvent,
+            onAssistantMessageCallback = onAssistantMessage
+        )
     }
 }

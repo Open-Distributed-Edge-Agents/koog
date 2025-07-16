@@ -5,7 +5,6 @@ version = rootProject.version
 
 plugins {
     id("ai.kotlin.multiplatform")
-    id("com.android.library")
 }
 
 val excluded = setOf(
@@ -42,6 +41,7 @@ val included = setOf(
     ":prompt:prompt-executor:prompt-executor-clients:prompt-executor-openrouter-client",
     ":prompt:prompt-executor:prompt-executor-clients:prompt-executor-ollama-client",
     ":prompt:prompt-executor:prompt-executor-clients:prompt-executor-bedrock-client",
+    ":prompt:prompt-executor:prompt-executor-clients:prompt-executor-litert-client",
     ":prompt:prompt-executor:prompt-executor-llms",
     ":prompt:prompt-executor:prompt-executor-llms-all",
     ":prompt:prompt-executor:prompt-executor-model",
@@ -56,9 +56,6 @@ val included = setOf(
 )
 
 kotlin {
-    androidTarget {
-        publishLibraryVariants("release", "debug")
-    }
     sourceSets {
         commonMain {
             dependencies {

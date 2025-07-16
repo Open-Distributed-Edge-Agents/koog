@@ -19,8 +19,8 @@ data class StartUiState(
             agentDemoRoute = NavRoute.AgentDemoRoute.WeatherScreen
         ),
         CardItem(
-            title = "LiteRT",
-            description = "A LiteRT agent that uses a local model to answer questions.",
+            title = "LiteRT Gemma",
+            description = "A LiteRT agent that uses the Gemma model to chat.",
             agentDemoRoute = NavRoute.AgentDemoRoute.LiteRTScreen
         ),
     )

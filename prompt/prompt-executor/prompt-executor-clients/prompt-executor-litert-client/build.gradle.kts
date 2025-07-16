@@ -9,61 +9,22 @@ group = rootProject.group
 version = rootProject.version
 
 kotlin {
-    androidTarget {
-        publishLibraryVariants("release", "debug")
-    }
     sourceSets {
         commonMain {
             dependencies {
-                api(project(":agents:agents-tools"))
                 api(project(":prompt:prompt-llm"))
-                api(project(":prompt:prompt-model"))
-                api(project(":agents:agents-tools"))
                 api(project(":prompt:prompt-executor:prompt-executor-model"))
-                api(project(":prompt:prompt-executor:prompt-executor-clients"))
-                api(project(":prompt:prompt-executor:prompt-executor-llms"))
-                api(project(":embeddings:embeddings-base"))
+                api(project(":prompt:prompt-model"))
 
-                api(libs.ktor.client.logging)
-                api(libs.kotlinx.datetime)
+                api(libs.tensorflow.lite.task.vision)
                 api(libs.kotlinx.coroutines.core)
-                api(libs.ktor.client.content.negotiation)
-                api(libs.ktor.serialization.kotlinx.json)
-                api(libs.ktor.client.cio)
                 implementation(libs.oshai.kotlin.logging)
             }
         }
-        androidMain {
-            dependencies {
-                implementation("org.tensorflow:tensorflow-lite-task-text:0.4.4")
-            }
-        }
-
-        jsMain {
-            dependencies {
-                api(libs.ktor.client.js)
-            }
-        }
-
 
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
-                implementation(project(":agents:agents-features:agents-features-event-handler"))
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.coroutines.test)
-            }
-        }
-
-        jvmTest {
-            dependencies {
-                implementation(kotlin("test-junit5"))
-                implementation(kotlin("test-junit5"))
-                implementation(libs.kotlinx.coroutines.test)
-                implementation(project(":agents:agents-core"))
-                implementation(project(":agents:agents-features:agents-features-event-handler"))
-                implementation(project(":agents:agents-features:agents-features-trace"))
-                implementation(project(":integration-tests"))
             }
         }
     }
