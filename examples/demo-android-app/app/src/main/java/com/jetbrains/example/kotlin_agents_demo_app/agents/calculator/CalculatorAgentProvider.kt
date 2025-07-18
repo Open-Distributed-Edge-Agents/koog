@@ -1,6 +1,6 @@
 package com.jetbrains.example.kotlin_agents_demo_app.agents.calculator
 
-import ai.koog.agents.core.agent.AIAgent
+import ai.koog.agents.android.AndroidAIAgent
 import ai.koog.agents.core.agent.config.AIAgentConfig
 import ai.koog.agents.core.dsl.builder.forwardTo
 import ai.koog.agents.core.dsl.builder.strategy
@@ -12,6 +12,7 @@ import ai.koog.agents.features.eventHandler.feature.handleEvents
 import ai.koog.prompt.dsl.prompt
 import ai.koog.prompt.executor.clients.openai.OpenAIModels
 import ai.koog.prompt.executor.llms.all.simpleOpenAIExecutor
+import android.app.Application
 import com.jetbrains.example.kotlin_agents_demo_app.agents.common.AgentProvider
 import com.jetbrains.example.kotlin_agents_demo_app.agents.common.ExitTool
 import com.jetbrains.example.kotlin_agents_demo_app.settings.AppSettings
@@ -26,11 +27,12 @@ object CalculatorAgentProvider : AgentProvider {
     override val description: String = "Hi, I'm a calculator agent, I can do math"
 
     override suspend fun provideAgent(
+        application: Application,
         appSettings: AppSettings,
         onToolCallEvent: suspend (String) -> Unit,
         onErrorEvent: suspend (String) -> Unit,
         onAssistantMessage: suspend (String) -> String,
-    ): AIAgent {
+    ): AndroidAIAgent<String, String> {
         val openAiToken = appSettings.getCurrentSettings().openAiToken
         require(openAiToken.isNotEmpty()) { "OpenAI token is not configured." }
 
@@ -117,23 +119,23 @@ object CalculatorAgentProvider : AgentProvider {
         )
 
         // Create the runner
-        return AIAgent(
+        return AndroidAIAgent(
             promptExecutor = executor,
             strategy = strategy,
             agentConfig = agentConfig,
             toolRegistry = toolRegistry,
         ) {
             handleEvents {
-                onToolCall { tool: Tool<*, *>, toolArgs: Tool.Args ->
-                    onToolCallEvent("Tool ${tool.name}, args $toolArgs")
+                onToolCall { context ->
+                    onToolCallEvent("Tool ${context.tool.name}, args ${context.toolArgs}")
                 }
 
                 @OptIn(ExperimentalUuidApi::class)
-                onAgentRunError { strategyName: String, sessionUuid: Uuid?, throwable: Throwable ->
-                    onErrorEvent("${throwable.message}")
+                onAgentRunError { context ->
+                    onErrorEvent("${context.throwable.message}")
                 }
 
-                onAgentFinished { strategyName: String, result: String? ->
+                onAgentFinished { context ->
                     // Skip finish event handling
                 }
             }

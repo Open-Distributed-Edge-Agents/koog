@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.jetbrains.example.kotlin_agents_demo_app"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -85,7 +85,7 @@ dependencies {
     implementation(libs.ktor.client.logging)
 
     // Koog
-    implementation(libs.koog.agents)
+    implementation("ai.koog:koog-agents-android")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

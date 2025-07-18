@@ -12,6 +12,8 @@ val excluded = setOf(
     ":examples",
     ":integration-tests",
     ":koog-spring-boot-starter",
+    ":koog-agents-android",
+    ":prompt:prompt-executor:prompt-executor-litert",
     project.path, // the current project should not depend on itself
 )
 

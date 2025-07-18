@@ -92,7 +92,8 @@ class AgentDemoViewModel(
             try {
                 // Create and run the agent using the factory
                 val agent = agentProvider.provideAgent(
-                    appSettings = AppSettings(application),
+                    application = getApplication(),
+                    appSettings = AppSettings(getApplication()),
                     onToolCallEvent = { message ->
                         // Add tool call messages to the chat
                         viewModelScope.launch {
@@ -145,7 +146,7 @@ class AgentDemoViewModel(
                 )
 
                 // Run the agent
-                val result = agent.runAndGetResult(userInput)
+                val result = agent.run(userInput)
 
                 // Update UI with final state and mark chat as ended
                 _uiState.update {

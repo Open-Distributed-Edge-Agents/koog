@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jetbrains.example.kotlin_agents_demo_app.agents.calculator.CalculatorAgentProvider
+import com.jetbrains.example.kotlin_agents_demo_app.agents.litert.LiteRTAgentProvider
 import com.jetbrains.example.kotlin_agents_demo_app.agents.weather.WeatherAgentProvider
 import com.jetbrains.example.kotlin_agents_demo_app.screens.agentdemo.AgentDemoScreen
 import com.jetbrains.example.kotlin_agents_demo_app.screens.agentdemo.AgentDemoViewModel
@@ -63,6 +64,9 @@ sealed interface NavRoute {
 
         @Serializable
         data object WeatherScreen : AgentDemoRoute
+
+        @Serializable
+        data object LiteRTScreen : AgentDemoRoute
     }
 
 }
@@ -125,6 +129,29 @@ fun NavGraph(navController: NavHostController) {
         composable<NavRoute.AgentDemoRoute.WeatherScreen> {
             val context = LocalContext.current
             val provider = WeatherAgentProvider
+            val viewModel = viewModel<AgentDemoViewModel>(
+                factory = object : ViewModelProvider.Factory {
+                    @Suppress("UNCHECKED_CAST")
+                    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                        return AgentDemoViewModel(
+                            application = context.applicationContext as Application,
+                            agentProvider = provider
+                        ) as T
+                    }
+                }
+            )
+
+            AgentDemoScreen(
+                viewModel = viewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+            )
+        }
+
+        composable<NavRoute.AgentDemoRoute.LiteRTScreen> {
+            val context = LocalContext.current
+            val provider = LiteRTAgentProvider
             val viewModel = viewModel<AgentDemoViewModel>(
                 factory = object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")

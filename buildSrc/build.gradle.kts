@@ -1,6 +1,7 @@
 repositories {
     mavenCentral()
     maven(url = "https://packages.jetbrains.team/maven/p/jcs/maven")
+    google()
 }
 
 plugins {
@@ -11,6 +12,7 @@ dependencies {
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.dokka.gradle.plugin)
     implementation(libs.jetsign.gradle.plugin)
+    implementation("com.android.tools.build:gradle:8.8.2")
 }
 
 kotlin {

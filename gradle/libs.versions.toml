@@ -22,6 +22,9 @@ spring-boot = "3.5.3"
 spring-management = "1.1.7"
 opentelemetry = "1.51.0"
 aws-sdk-kotlin = "1.4.119"
+mediapipe = "0.10.25"
+tflite = "16.4.0"
+agp = "8.8.2"
 
 [libraries]
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
@@ -57,6 +60,8 @@ opentelemetry-sdk = { module = "io.opentelemetry:opentelemetry-sdk" }
 opentelemetry-exporter-otlp = { module = "io.opentelemetry:opentelemetry-exporter-otlp" }
 opentelemetry-exporter-logging = { module = "io.opentelemetry:opentelemetry-exporter-logging" }
 aws-sdk-kotlin-bedrockruntime = { module = "aws.sdk.kotlin:bedrockruntime", version.ref = "aws-sdk-kotlin" }
+mediapipe-tasks-genai = { group = "com.google.mediapipe", name = "tasks-genai", version.ref = "mediapipe" }
+tflite-java = { group = "com.google.android.gms", name = "play-services-tflite-java", version.ref = "tflite" }
 
 # Spring
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
@@ -93,3 +98,4 @@ shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
 kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 spring-management = { id = "io.spring.dependency-management", version.ref = "spring-management" }
+android-library = { id = "com.android.library", version.ref = "agp" }

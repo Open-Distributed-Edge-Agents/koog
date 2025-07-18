@@ -3,6 +3,14 @@ rootProject.name = "koog-agents"
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        google()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        google()
     }
 }
 
@@ -27,6 +35,7 @@ include(":examples")
 include(":integration-tests")
 
 include(":koog-agents")
+include(":koog-agents-android")
 
 include(":prompt:prompt-cache:prompt-cache-files")
 include(":prompt:prompt-cache:prompt-cache-model")
@@ -43,6 +52,7 @@ include(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-openrou
 include(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-ollama-client")
 
 include(":prompt:prompt-executor:prompt-executor-llms")
+include(":prompt:prompt-executor:prompt-executor-litert")
 include(":prompt:prompt-executor:prompt-executor-llms-all")
 include(":prompt:prompt-executor:prompt-executor-model")
 
@@ -52,8 +62,6 @@ include(":prompt:prompt-model")
 include(":prompt:prompt-structure")
 include(":prompt:prompt-tokenizer")
 include(":prompt:prompt-xml")
-include("prompt:prompt-executor:prompt-executor-clients:prompt-executor-ollama-client")
-include(":prompt:prompt-executor:prompt-executor-clients:prompt-executor-ollama-client")
 
 include(":embeddings:embeddings-base")
 include(":embeddings:embeddings-llm")
